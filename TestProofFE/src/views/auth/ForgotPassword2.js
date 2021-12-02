@@ -2,95 +2,77 @@ import React, { useState, useEffect } from 'react'
 import {
   CWidgetSimple,
   CButton,
-  CImg
+  CImg,
+  CCol,
+  CForm,
+  CInvalidFeedback,
+  CFormGroup,
+  CInput,
+  CRow
 } from '@coreui/react'
 import { useDispatch, useSelector } from 'react-redux';
 import { userService } from '../../controllers/_services/user.service';
 import { successNotification, warningNotification } from '../../controllers/_helpers';
-import TextField from '@material-ui/core/TextField';
-import {
-    alpha,
-    makeStyles,
-  } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
-import { InputAdornment } from '@material-ui/core';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
-const useStyles = makeStyles(() => ({
-  noBorder: {
-    border: "none",
-    boxShadow: `${alpha("#E3EFFE", 0.9)} 3px 3px 1px 1px`,
-    borderRadius: '50px'
-  },
-}));
-const useStylesReddit = makeStyles((theme) => ({
-  root: {
-    border: "1px solid lightgray",
-    overflow: 'hidden',
-    backgroundColor: '#fcfcfb',
-    fontWeight: '400',
-    lineHeight: '18px',
-    fontSize: '18px',
-    height: '55px',
-    color: "black",
-    transition: theme.transitions.create(['border-color', 'box-shadow']),
-    '&:hover': {
-      backgroundColor: '#fff',
-    },
-    '&$focused': {
-      backgroundColor: '#fff',
-      boxShadow: `${alpha("#24242f", 0.25)} 0 0 0 1px`,
-      borderRadius: 2,
-      borderColor: "#24242f",
-      borderBottom: "1px solid black",
-      color: "black"
+
+
+const validationSchema = function (values) {
+  return Yup.object().shape({
+    code: Yup.string()
+    .required('Code is required'),
+    password: Yup.string()
+    .min(7, `Password has to be at least ${7} characters!`)
+    .matches(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{7,}/, 'Password must contain: numbers, uppercase and lowercase letters\n')
+    .required('Password is required'),
+    confirmPassword: Yup.string()
+    .oneOf([values.password], 'Passwords must match')
+    .required('Password confirmation is required')
+  })
+}
+
+const validate = (getValidationSchema) => {
+  return (values) => {
+    const validationSchema = getValidationSchema(values)
+    try {
+      validationSchema.validateSync(values, { abortEarly: false })
+      return {}
+    } catch (error) {
+      return getErrorsFromValidationError(error)
     }
-  },
-  focused: {},
-}));
+  }
+}
 
-function RedditTextField(props) {
-  const classes = useStylesReddit();
+const getErrorsFromValidationError = (validationError) => {
+  const FIRST_ERROR = 0
+  return validationError.inner.reduce((errors, error) => {
+    return {
+      ...errors,
+      [error.path]: error.errors[FIRST_ERROR],
+    }
+  }, {})
+}
 
-  return <TextField InputProps={{ classes, disableUnderline: true }} {...props} />;
+const initialValues = {
+  email: ""
 }
 
 const Signup = () => {
   const dispatch = useDispatch()
-  const classes = useStyles();
-
+  
   const selectedUser = useSelector(state => state.selectedUser);
   const history = useHistory()
 
-  const [confirmationCode, setConfirmationCode] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-
-  const [errMessageForConfirmationCode, setErrMessageForConfirmationCode] = useState('')
-  const [errMessageForNewPassword, setErrMessageForNewPassword] = useState('')
-  const [errMessageForConfirmPassword, setErrMessageForConfirmPassword] = useState('')
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false)
 
-  if (!selectedUser || !selectedUser.email) {
-    dispatch({type: 'set', openSignup: false})
-    dispatch({type: 'set', openSignin: false})
-    dispatch({type: 'set', openEmailVerification: false})
-    dispatch({type: 'set', forgotPassword1: true})
-    dispatch({type: 'set', forgotPassword2: false})
-    return;
-  }
-
-  const handleEnterKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      onSubmit();
-    }
-  }
-
-  const onSubmit = () => {
+  const onSubmit = (values, { setSubmitting, setErrors }) => {
     if (selectedUser && JSON.stringify(selectedUser) !== '{}')
     userService.forgotPassword({
-      "code": confirmationCode,
+      "code": values.code,
       "email": selectedUser.email,
-      "password": password
+      "password": values.password
     })
         .then(
             user => { 
@@ -114,15 +96,6 @@ const Signup = () => {
     dispatch({type: 'set', forgotPassword2: false})
   }
 
-//   useEffect(() => {
-//     if (confirmationCode !== '' && password !== '' && errMessageForConfirmationCode === '' && errMessageForNewPassword === '' && 
-//         errMessageForConfirmPassword === '' && password === confirmPassword) {
-//       setSubmitButtonDisabled(false);
-//     } else {
-//       setSubmitButtonDisabled(true);
-//     }
-//   }, [confirmationCode, password, confirmPassword])
-
   return (
     <>
       <CWidgetSimple className="signin-widget text-left p-3 pt-0 pb-0 mx-auto">
@@ -131,128 +104,86 @@ const Signup = () => {
         </div>
         <h2 className="text-left signin-header-title">Forgot password?</h2>
         <h5 className="text-left signin-header-desc">Please confirm your email and then reset your password.</h5>
-        <div className="d-flex mt-3">
-                {
-                    <RedditTextField
-                        id="verify-code"
-                        label=""
-                        placeholder="Type the confirmation code."
-                        value={confirmationCode}
-                        helperText={errMessageForConfirmationCode && errMessageForConfirmationCode !== '' ? errMessageForConfirmationCode : '' }
-                        error={errMessageForConfirmationCode && errMessageForConfirmationCode !== ''}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        fullWidth
-                        InputProps={{
-                                      startAdornment: (
-                                        <InputAdornment position="start">
-                                          <CImg src={'../img/email.png'} style={{width: '27px'}} />
-                                        </InputAdornment>
-                                      ),
-                                      classes:{notchedOutline:classes.noBorder}
-                                    }}
-                        variant="outlined"
-                        onKeyDown={handleEnterKeyDown}
-                        onBlur={() => {
-                          if (!confirmationCode || confirmationCode === '') setErrMessageForConfirmationCode('Full name is required')
-                          else setErrMessageForConfirmationCode('')
-                        }}
-                        onKeyUp={() => {
-                          if (!confirmationCode || confirmationCode === '') setErrMessageForConfirmationCode('Full name is required')
-                          else setErrMessageForConfirmationCode('')
-                        }}
-                        onChange={(e) => {
-                          setConfirmationCode(e.target.value); }}
-                    />
-                }
-            </div>
 
-            <div className="d-flex mt-3">
-                {
-                    <RedditTextField
-                        id="password"
-                        label=""
-                        placeholder="Type your password"
-                        value={password}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        type="password"
-                        fullWidth
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <CImg src={'../img/password.png'} style={{width: '27px'}} />
-                            </InputAdornment>
-                          ),
-                          classes:{notchedOutline:classes.noBorder}
-                        }}
-                        variant="outlined"
-                        onKeyDown={handleEnterKeyDown}
-                        helperText={errMessageForNewPassword && errMessageForNewPassword !== '' ? errMessageForNewPassword : '' }
-                        error={errMessageForNewPassword && errMessageForNewPassword !== ''}
-                        onBlur={() => {
-                          if (!password || password === '') setErrMessageForNewPassword('Password is required')
-                          else if (password.length < 6) setErrMessageForNewPassword('Password hat to be at least 6 characters!')
-                          else if (!password.match(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/)) setErrMessageForNewPassword('Password must contain: numbers, uppercase and lowercase letters');
-                          else setErrMessageForNewPassword('')
-                        }}
-                        onKeyUp={() => {
-                          if (!password || password === '') setErrMessageForNewPassword('Password is required')
-                          else if (password.length < 6) setErrMessageForNewPassword('Password hat to be at least 6 characters!')
-                          else if (!password.match(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/)) setErrMessageForNewPassword('Password must contain: numbers, uppercase and lowercase letters');
-                          else setErrMessageForNewPassword('')
-                        }}
-                        onChange={(e) => { setPassword(e.target.value); }}
-                    />
-                }
-            </div>
+        <Formik
+            initialValues={initialValues}
+            validate={validate(validationSchema)}
+            onSubmit={onSubmit}
+          >
+            {
+              ({
+                values,
+                errors,
+                touched,
+                status,
+                dirty,
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                isSubmitting,
+                isValid,
+                handleReset,
+                setTouched
+              }) => (
+                <CRow>
+                  <CCol lg="12">
+                    <CForm onSubmit={handleSubmit} noValidate name='simpleForm'>
+                      <CFormGroup>
+                        <CInput type="text"
+                                name="code"
+                                id="code"
+                                placeholder="Confirm Code"
+                                autoComplete="code"
+                                valid={!errors.code}
+                                invalid={touched.code && !!errors.code}
+                                required
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                value={values.code} />
+                        <CInvalidFeedback>{errors.code}</CInvalidFeedback>
+                      </CFormGroup>
+                      <CFormGroup>
+                        <CInput type="password"
+                                name="password"
+                                id="password"
+                                placeholder="Password"
+                                autoComplete="new-password"
+                                valid={!errors.password}
+                                invalid={touched.password && !!errors.password}
+                                required
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                value={values.password} />
+                        {/*<CInvalidFeedback>Required password containing at least: number, uppercase and lowercase letter, 8 characters</CInvalidFeedback>*/}
+                        <CInvalidFeedback>{errors.password}</CInvalidFeedback>
+                      </CFormGroup>
+                      <CFormGroup>
+                        <CInput type="password"
+                                name="confirmPassword"
+                                id="confirmPassword"
+                                placeholder="Repeat password"
+                                autoComplete="new-password"
+                                valid={!errors.confirmPassword}
+                                invalid={touched.confirmPassword && !!errors.confirmPassword}
+                                required
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                value={values.confirmPassword} />
+                        <CInvalidFeedback>{errors.confirmPassword}</CInvalidFeedback>
+                      </CFormGroup>
+                      
+                      <CFormGroup>
 
-            <div className="d-flex mt-3">
-                {
-                    <RedditTextField
-                        id="confirm-password"
-                        label=""
-                        placeholder="Repeat new password"
-                        value={confirmPassword}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        type="password"
-                        fullWidth
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <CImg src={'../img/password.png'} style={{width: '27px'}} />
-                            </InputAdornment>
-                          ),
-                          classes:{notchedOutline:classes.noBorder}
-                        }}
-                        variant="outlined"
-                        onKeyDown={handleEnterKeyDown}
-                        helperText={errMessageForConfirmPassword && errMessageForConfirmPassword !== '' ? errMessageForConfirmPassword : '' }
-                        error={errMessageForConfirmPassword && errMessageForConfirmPassword !== ''}
-                        onBlur={() => {
-                          if (!confirmPassword || confirmPassword === '') setErrMessageForConfirmPassword('Password confirmation is required!')
-                          else if (confirmPassword !== password) setErrMessageForConfirmPassword('Passwords must match')
-                          else setErrMessageForConfirmPassword('')
-                        }}
-                        onKeyUp={() => {
-                          if (!confirmPassword || confirmPassword === '') setErrMessageForConfirmPassword('Password confirmation is required!')
-                          else if (confirmPassword !== password) setErrMessageForConfirmPassword('Passwords must match')
-                          else setErrMessageForConfirmPassword('')
-                        }}
-                        onChange={(e) => { setConfirmPassword(e.target.value); }}
-                    />
-                }
-            </div>
+                        <CButton type="submit" className="signin-button mt-3" block disabled={isSubmitting || submitButtonDisabled || !isValid}>
+                            Reset your password
+                        </CButton>
 
-            <div className="m-auto text-center">
-                <CButton className="signin-button mt-3 btn-pill" size="lg" color="info" onClick={() => onSubmit()} disabled={submitButtonDisabled}>
-                  Reset your password
-                </CButton>
-            </div>
+                      </CFormGroup>
+                    </CForm>
+                  </CCol>
+                </CRow>
+              )}
+          </Formik>
       </CWidgetSimple>
     </>
   )

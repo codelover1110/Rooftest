@@ -92,7 +92,7 @@ def forgotPasswordToConfirmEmail(request):
             message = f'Hi {user.username}, Verification code: ${user.code}'
             email_from = settings.EMAIL_HOST_USER
             recipient_list = [user.email, ]
-            send_mail(subject, message, email_from, recipient_list)
+            # send_mail(subject, message, email_from, recipient_list)
 
             return JsonResponse({'status': True})
         else:

@@ -399,7 +399,7 @@
 .signin-widget {
   min-width: 450px;
   margin: 0;
-  background-color: white !important;
+  background-color: #EAEAEA !important;
   color: #181924;
   padding: 3px 15px !important;
   box-shadow: 20px 20px 60px #1b1d1f;
@@ -626,13 +626,61 @@
 
 .c-header .c-header-nav .c-header-nav-link,
 .c-header .c-header-nav .c-header-nav-btn {
-  color: white;
+  color: #70A6C4;
+  background-color: #C8ECFF;
   &:hover {
-    color: white;
+    color: #2A7299;
+    background-color: #B0E4FF;
   }
 }
 .c-wrapper {
   color: #000;
+}
+
+.c-sidebar .c-sidebar-brand {
+  background-color: transparent !important;
+}
+.c-dark-theme .c-sidebar .c-sidebar-brand {
+  background-color: transparent !important;
+}
+.c-sidebar .c-sidebar-nav-link, .c-sidebar .c-sidebar-nav-dropdown-toggle {
+  color: #70A6C4 !important;
+  background-color: #C8ECFF !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  padding: 15px 20px !important;
+
+  .c-sidebar-nav-icon {
+    color: #70A6C4 !important;
+    font-weight: 400 !important;
+  }
+  &:hover {
+    color: #2A7299 !important;
+    background-color: #B0E4FF !important;
+    font-weight: 600 !important;
+    .c-sidebar-nav-icon {
+      color: #195f85 !important;
+      font-weight: 600 !important;
+    }
+  }
+}
+.sidebar-logout {
+  color: #70A6C4 !important;
+  font-family: 'PoppinsM' !important;
+  margin-bottom: 60px;
+  cursor: pointer !important;
+  &:hover {
+    color: #2A7299 !important;
+  }
+}
+.sidebar-avatar {
+  padding-top: 5px;
+  color: #2A7299 !important;
+  font-family: 'PoppinsM' !important;
+
+  p {
+    margin-top: -3px;
+  }
 }
 
 .fullwidth {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   CNav,
@@ -14,18 +14,52 @@ import {
   CSidebar,
   CImg,
   CSidebarClose
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
+} from '@coreui/react';
+import CIcon from '@coreui/icons-react';
+import { useHistory } from 'react-router-dom';
+import { userService } from '../controllers/_services/user.service';
 
 const TheAside = () => {
   const show = useSelector(state => state.asideShow)
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const history = useHistory();
   const setState = (state) => dispatch({type: 'set', asideShow: state})
+
+  const isLogin = useSelector(state => state.isLogin)
+  const isAdmin = useSelector(state => state.isAdmin)
+  const currPath = history.location.pathname
+
+  const [fullName, setFullName] = useState('')
+
+  const localUser = localStorage.getItem('userId')
+  const user = useSelector(state => state.user)
+
+
+  useEffect(() => {
+    if (localUser) {
+      userService.getById(parseInt(localUser))
+        .then(
+          result => {
+            // if (result.is_active === 0) logout()
+            dispatch({type: 'set', isLogin: true})
+            dispatch({type: 'set', user: result})
+            // if (result.is_superuser === 1) dispatch({type: 'set', isAdmin: true})
+          },
+          error => {
+            // logout()
+          }
+        )
+    }
+    else {
+      history.push("signin")
+    }
+  }, [localUser])
+
 
   return (
     <CSidebar
       aside
-      size='lg'
+      size='md'
       overlaid
       show={show}
       onShowChange={(state) => setState(state)}

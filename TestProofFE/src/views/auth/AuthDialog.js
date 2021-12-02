@@ -30,10 +30,10 @@ const AuthDialog = () => {
         centered
         // size={forgotPassword1 || forgotPassword2 ? '' : 'sm' }
         style={{
-          borderRadius: "50px",
+          borderRadius: "10px",
           overflow: "hidden",
           maxWidth: '450px',
-          margin: 'auto'
+          margin: 'auto',
         }}
         >
         <CModalBody className="p-0">

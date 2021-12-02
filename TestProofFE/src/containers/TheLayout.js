@@ -5,8 +5,8 @@ import {
   TheContent,
   TheFooter,
   TheHeader,
+  TheSidebar
 } from './index'
-
 import ThemeProvider from '../contexts/ThemeContext'
 
 const TheLayout = (props) => {
@@ -19,13 +19,13 @@ const TheLayout = (props) => {
   return (
     <ThemeProvider>
       <div className={classes}>
-        <TheHeader/>
+        {/* <TheHeader/> */}
+        <TheSidebar/>
         <div className="c-wrapper" style={{backgroundColor: 'white'}}>
-          {/* <TheSidebar/> */}
           <div className="c-body">
             <TheContent/>
           </div>
-          <TheFooter/>
+          {/* <TheFooter/> */}
         </div>
       </div>
     </ThemeProvider>
