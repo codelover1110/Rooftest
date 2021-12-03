@@ -1,19 +1,14 @@
-import React, { lazy, useEffect, useState } from 'react'
 import {
-    CCard,
-    CCardBody,
-    CCardHeader,
-    CCol,
-    CRow,
-    CButton,
-    CInputGroup,
-    CInputGroupAppend,
-    CInputGroupText,
-    CInput
-} from '@coreui/react'
-import { useSelector, useDispatch } from 'react-redux';
+  CButton, CCard,
+  CCardBody,
+  CCardHeader,
+  CCol, CInput, CInputGroup,
+  CInputGroupAppend,
+  CInputGroupText, CRow
+} from '@coreui/react';
+import React, { lazy, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { format } from 'date-fns';
 import { userService } from '../../controllers/_services';
 
 const EditUsers = lazy(() => import('./EditUsers'));

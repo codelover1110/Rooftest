@@ -1,23 +1,20 @@
-import React, { lazy, useState, useEffect } from 'react'
 import {
-  CCard,
-  CButton,
-  CCardBody
-} from '@coreui/react'
-import TextField from '@material-ui/core/TextField';
+    CButton, CCard, CCardBody
+} from '@coreui/react';
 import {
     alpha,
-    makeStyles,
-  } from '@material-ui/core/styles';
+    makeStyles
+} from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import React, { useEffect, useState } from 'react';
 // import {
 //     MuiPickersUtilsProvider,
 //     KeyboardTimePicker,
 //     KeyboardDatePicker,
 //   } from '@material-ui/pickers';
-import { useSelector, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-import { userService } from '../../controllers/_services';
+import { useDispatch, useSelector } from 'react-redux';
 import { successNotification, warningNotification } from '../../controllers/_helpers';
+import { userService } from '../../controllers/_services';
 
 const useStylesReddit = makeStyles((theme) => ({
     root: {

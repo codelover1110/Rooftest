@@ -1,9 +1,9 @@
-import React from 'react'
 import {
   CCard,
   CCardBody,
-  CCardHeader,
-} from '@coreui/react'
+  CCardHeader
+} from '@coreui/react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
