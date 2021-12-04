@@ -1,25 +1,14 @@
-import React, { useState, useEffect } from 'react'
 import {
   CButton,
-  CCard,
-  CCardHeader,
-  CCardBody,
-  CCol,
-  CForm,
-  CInvalidFeedback,
-  CFormGroup,
-  CInput,
-  CRow,
-  CImg,
-  CContainer,
-  CCardGroup
-} from '@coreui/react'
-import { Formik } from 'formik'
-import * as Yup from 'yup'
+  CCard, CCardBody, CCardGroup, CCol, CContainer, CForm, CFormGroup, CImg, CInput, CInvalidFeedback, CRow
+} from '@coreui/react';
+import { Formik } from 'formik';
+import React from 'react';
 import { useDispatch } from 'react-redux';
-import { userService } from '../../controllers/_services';
-import { successNotification, warningNotification } from '../../controllers/_helpers';
 import { useHistory } from 'react-router-dom';
+import * as Yup from 'yup';
+import { successNotification, warningNotification } from '../../controllers/_helpers';
+import { userService } from '../../controllers/_services';
 
 const AuthDialog = React.lazy(() => import('../../views/auth/AuthDialog'));
 

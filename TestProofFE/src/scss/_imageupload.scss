@@ -1,0 +1,46 @@
+.picture-container {
+  position: relative;
+  cursor: pointer;
+  text-align: center;
+  .picture {
+    width: 106px;
+    height: 106px;
+    background-color: #999999;
+    border: 4px solid #cccccc;
+    color: #ffffff;
+    border-radius: 50%;
+    margin: 5px auto;
+    overflow: hidden;
+    transition: all 0.2s;
+    -webkit-transition: all 0.2s;
+    text-align: center;
+
+    &:hover {
+      border-color: $pink;
+    }
+
+    input[type='file'] {
+      cursor: pointer;
+      display: block;
+      height: 100%;
+      left: 0;
+      opacity: 0 !important;
+      position: absolute;
+      top: 0;
+      width: 106px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+  .picture-src {
+    width: 100%;
+  }
+}
+.description {
+  background: #39A2DB;
+  border-radius: 13px;
+  color: white;
+  padding: 12px;
+  width: 220px;
+  margin: auto;
+}

@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
 import {
-    CModal,
-    CModalBody,
-    CButton,
-    CSelect
-  } from '@coreui/react'
+    CButton, CModal,
+    CModalBody, CSelect
+} from '@coreui/react';
+import {
+    makeStyles
+} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import {
-    makeStyles,
-    } from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { successNotification } from '../../controllers/_helpers';
 import { userService } from '../../controllers/_services';
-import { successNotification, warningNotification } from '../../controllers/_helpers';
 
 const useStylesReddit = makeStyles((theme) => ({
     root: {

@@ -15,22 +15,20 @@ const loading = (
 const TheLayout = React.lazy(() => import('./containers/TheLayout'));
 
 
-class App extends Component {
+function App() {
 
-  render() {
-    return (
-      <BrowserRouter>
-          <React.Suspense fallback={loading}>
-            <Switch>
-              <Route exact path="/signin" name="Login Page" render={props => <Signin {...props}/>} />
-              {/* <Route exact path="/signup" name="Register Page" render={props => <Signup {...props}/>} /> */}
-              <Route exact path="/signup" name="Signup" render={props => <Signup {...props}/>} />
-              <Route path="/" name="Home" render={props => <TheLayout {...props}/>} />
-            </Switch>
-          </React.Suspense>
-      </BrowserRouter>
-    );
-  }
+  return (
+    <BrowserRouter>
+        <React.Suspense fallback={loading}>
+          <Switch>
+            <Route exact path="/signin" name="Login Page" render={props => <Signin {...props}/>} />
+            {/* <Route exact path="/signup" name="Register Page" render={props => <Signup {...props}/>} /> */}
+            <Route exact path="/signup" name="Signup" render={props => <Signup {...props}/>} />
+            <Route path="/" name="Home" render={props => <TheLayout {...props}/>} />
+          </Switch>
+        </React.Suspense>
+    </BrowserRouter>
+  );
 }
 
 export default App;
