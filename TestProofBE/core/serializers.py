@@ -13,5 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
                     'password',
                     'fullName',
                     'code',
+                    'title',
+                    'avatar',
                     'isTFA'
                   )

@@ -1,6 +1,6 @@
 from django.http.response import JsonResponse
 from rest_framework import status
-from rest_framework.parsers import JSONParser
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.decorators import api_view
 from .serializers import UserSerializer
 from .models import User
@@ -10,7 +10,7 @@ import jwt
 from random import randint
 from django.conf import settings
 from django.core.mail import send_mail
-
+from rest_framework.request import Request
 
 # Create your views here.
 @api_view(['POST'])
@@ -52,7 +52,7 @@ def signup(request):
     return JsonResponse({'status': False, 'message': 'Input error'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'POST', 'DELETE', 'PUT'])
 def userdetail(request, pk):
     # find tutorial by pk (id)
     try:
@@ -60,6 +60,14 @@ def userdetail(request, pk):
         if request.method == 'GET':
             user_serializer = UserSerializer(user)
             return JsonResponse(user_serializer.data)
+        elif request.method == 'POST':
+            print( type( request.data ) )
+            user_serializer = UserSerializer(data=request.data)
+            if user_serializer.is_valid():
+                user_serializer.save()
+                user_data = user_serializer.data
+                return JsonResponse(user_serializer.data)
+            return JsonResponse(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         elif request.method == 'PUT':
             user_data = JSONParser().parse(request)
             user_serializer = UserSerializer(user, data=user_data)
@@ -115,5 +123,21 @@ def forgotPassword(request):
             return JsonResponse({'status': True})
         else:
             return JsonResponse({'status': False, 'message': 'User with the email not found'})
+
+    return JsonResponse({'status': False, 'message': 'Code is incorrect. please check your email.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['POST', 'PUT'])
+def repassword(request, pk):
+    print("sssssssssssssssssssssssssssss")
+    user_data = JSONParser().parse(request)
+    user = User.objects.get(pk=pk)
+    if user_data:
+        if user.password == make_password(user_data['oldPassword']):
+            user.password = make_password(user_data['password'])
+            user.save()
+
+            return JsonResponse({'status': True})
+        else:
+            return JsonResponse({'status': False, 'message': 'Old password is not correct!'})
 
     return JsonResponse({'status': False, 'message': 'Code is incorrect. please check your email.'}, status=status.HTTP_401_UNAUTHORIZED)

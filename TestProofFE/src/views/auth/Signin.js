@@ -60,6 +60,8 @@ const Signin = () => {
       .then(
         result => {
           if (result.status)  {
+            localStorage.setItem('user', JSON.stringify(result.data));
+            dispatch({type: 'set', user: result.data})
             dispatch({type: 'set', isLogin: true})
             successNotification('Welcome to TestProof', 3000)
             history.push('home')
@@ -89,7 +91,7 @@ const Signin = () => {
           <CCol md="12">
             <CCardGroup className="m-auto" style={{
                 overflow: "hidden",
-                maxWidth: '380px'
+                maxWidth: '420px'
               }}>
               <CCard className="p-3" style={{backgroundColor: "#EAEAEA", borderRadius: "15px", boxShadow: "none"}}>
                 <CCardBody style={{padding: "30px"}}>

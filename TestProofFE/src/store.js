@@ -12,6 +12,7 @@ const initialState = {
   openAddPayment: false,
   forgotPassword1: false,
   forgotPassword2: false,
+  changePassword: false,
   user: {}
 }
 

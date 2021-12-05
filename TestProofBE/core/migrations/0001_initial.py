@@ -19,6 +19,8 @@ class Migration(migrations.Migration):
                 ('email', models.CharField(max_length=150, unique=True)),
                 ('password', models.CharField(max_length=128, verbose_name='password')),
                 ('fullName', models.CharField(blank=True, max_length=100, null=True)),
+                ('title', models.CharField(max_length=150, unique=True, verbose_name='title')),
+                ('avatar', models.CharField(max_length=150, unique=True, verbose_name='avatar')),
                 ('code', models.CharField(blank=True, max_length=100, null=True)),
                 ('isTFA', models.BooleanField(default=False)),
             ],
