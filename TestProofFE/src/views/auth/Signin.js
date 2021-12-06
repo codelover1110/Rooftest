@@ -66,6 +66,7 @@ const Signin = () => {
             history.push('home')
           }
           else {
+
             warningNotification(result.message, 3000)
             // dispatch({type: 'set', selectedUser: {
             //   "email": values.email,
@@ -75,6 +76,8 @@ const Signin = () => {
           }
         },
         error => {
+          console.log(error);
+
           warningNotification(error, 3000)
         }
       );

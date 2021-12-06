@@ -1,9 +1,11 @@
 /*eslint-disable*/
 import React from "react";
 import defaultImage from "../assets/imgs/default-avatar.png";
+import { useConfig } from "../config";
+const config = useConfig()
 
-export default function PictureUpload({file, setFile}) {
-  const [imagePreviewUrl, setImagePreviewUrl] = React.useState(defaultImage);
+export default function PictureUpload({imageUrl, file, setFile}) {
+  const [imagePreviewUrl, setImagePreviewUrl] = React.useState(imageUrl? `${config.serverUrl}/media${imageUrl}`: defaultImage);
   const handleImageChange = e => {
     e.preventDefault();
     let reader = new FileReader();
