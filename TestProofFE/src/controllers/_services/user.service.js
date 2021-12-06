@@ -36,6 +36,7 @@ function login(username, password, confirm) {
         body: JSON.stringify(info)
     };
 
+    console.log(requestOptions)
     return fetch(`${serverURL}/signin`, requestOptions)
         .then(handleResponse)
         .then(user => {

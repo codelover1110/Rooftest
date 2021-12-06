@@ -66,7 +66,7 @@ const PersionalSetting = () => {
   const user = useSelector((state) => state.user)
 
   const [initialValues, setInitialValues] = useState(null)
-  const [avatar, setAvatar] = useState()
+  const [avatarFile, setAvatarFile] = useState()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
@@ -79,8 +79,8 @@ const PersionalSetting = () => {
   }, [])
 
   useEffect(() => {
-    const { username, fullName, title, email } = user;
-    setInitialValues({ username, fullName, title, email });
+    const { username, fullName, title, email, avatar } = user;
+    setInitialValues({ username, fullName, title, email, avatar });
   }, [user])
 
   //  # Med ID, Address 1, Address 2, City, Zip, Phone Number, Last Purchase Date
@@ -118,8 +118,8 @@ const PersionalSetting = () => {
           newPassword,
         }
       }
-      if (avatar) {
-        newUser['avatarFile'] = avatar;
+      if (avatarFile) {
+        newUser['avatarFile'] = avatarFile;
       }
       setSubmitting(true)
       userService.update(newUser).then(
@@ -167,7 +167,7 @@ const PersionalSetting = () => {
                   <CForm onSubmit={handleSubmit} name="simpleForm">
                     <Grid container spacing={1}>
                       <Grid item xs={12}>
-                        <PictureUpload file={avatar} setFile={setAvatar} />
+                        <PictureUpload imageUrl={values.avatar} file={avatarFile} setFile={setAvatarFile} />
                       </Grid>
                       <Grid item xs={12}>
                         <CFormGroup>

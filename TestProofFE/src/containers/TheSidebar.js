@@ -18,6 +18,8 @@ import { useHistory } from 'react-router-dom';
 import { userService } from '../controllers/_services/user.service';
 // sidebar nav config
 import navigation from './_nav'
+import { useConfig } from "../config";
+const config = useConfig()
 
 
 const TheSidebar = () => {
@@ -58,7 +60,7 @@ const TheSidebar = () => {
         marginBottom: "50px"
       }}>
         <div style={{display: 'flex'}}>
-          <CImg style={{width: 40}} src={(user && user.avatar) ? 'http://localhost:8000/media'+user.avatar:'img/avatar.png'} height="50"></CImg>
+          <CImg style={{width: 50, height: 50, borderRadius: '50%', marginRight: 7}} src={(user && user.avatar) ? `${config.serverUrl}/media${user.avatar}`:'img/avatar.png'} height="50"></CImg>
           <div style={{width: 'calc(100% - 40px)'}} className="sidebar-avatar">
             <h5>{user && user.title}</h5>
             <p>{user && user.fullName}</p>
@@ -80,7 +82,7 @@ const TheSidebar = () => {
         { navigation.map(({name, to, icon,}) => (
           <>
             <CSidebarNavDivider />
-            <CSidebarNavItem name={name} to={to} icon={icon} />
+            <CSidebarNavItem to={to} name={name} icon={<CImg src={icon} style={{height: 30, paddingRight: 5}}/>} />
           </>
         ))
           
