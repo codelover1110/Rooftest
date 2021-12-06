@@ -24,6 +24,7 @@ const TheSidebar = () => {
   const dispatch = useDispatch()
   const show = useSelector(state => state.sidebarShow)
   const history = useHistory()
+  const user = useSelector((state) => state.user)
 
   const logout = () => {
     userService.logout();
@@ -56,20 +57,18 @@ const TheSidebar = () => {
         marginTop: "50px",
         marginBottom: "50px"
       }}>
-        <CRow>
-          <CCol sm="3" lg="3" md="3" xs="3">
-            <CImg src={'img/avatar.png'} height="50"></CImg>
-          </CCol>
-          <CCol sm="9" lg="9" md="9" xs="9" className="sidebar-avatar">
-            <h5>Mahmud Ozmen</h5>
-            <p>Tester</p>
-          </CCol>
-        </CRow>
+        <div style={{display: 'flex'}}>
+          <CImg style={{width: 40}} src={(user && user.avatar) ? 'http://localhost:8000/media'+user.avatar:'img/avatar.png'} height="50"></CImg>
+          <div style={{width: 'calc(100% - 40px)'}} className="sidebar-avatar">
+            <h5>{user && user.title}</h5>
+            <p>{user && user.fullName}</p>
+          </div>
+        </div>
       </CSidebarBrand>
 
       <CSidebarNav>
 
-        <CCreateElement
+        {/* <CCreateElement
           items={navigation}
           components={{
             CSidebarNavDivider,
@@ -77,7 +76,15 @@ const TheSidebar = () => {
             CSidebarNavItem,
             CSidebarNavTitle
           }}
-        />
+        /> */}
+        { navigation.map(({name, to, icon,}) => (
+          <>
+            <CSidebarNavDivider />
+            <CSidebarNavItem name={name} to={to} icon={icon} />
+          </>
+        ))
+          
+        }
 
       </CSidebarNav>
 
