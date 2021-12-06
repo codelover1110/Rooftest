@@ -1,5 +1,6 @@
 import { authHeader } from '../_helpers';
 import { useConfig } from "../../config";
+import axios from 'axios';
 
 const config = useConfig()
 const serverURL = config.serverUrl
@@ -28,10 +29,11 @@ export const userService = {
 };
 
 function login(username, password, confirm) {
+    let info = { "username": username, "password": password }
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "username": username, "password": password })
+        body: JSON.stringify(info)
     };
 
     return fetch(`${serverURL}/signin`, requestOptions)
@@ -142,13 +144,28 @@ function register(user) {
 }
 
 function update(user) {
-    const requestOptions = {
-        method: 'PUT',
-        headers: { ...authHeader(), 'Content-Type': 'application/json' },
-        body: JSON.stringify(user)
-    };
-
-    return fetch(`${serverURL}/getUser/${user.id}`, requestOptions).then(handleResponse);;
+    if (user.avatarFile) {
+        const formData = new FormData();
+        formData.append('avatar', user.avatarFile)
+        return axios.post(`${serverURL}/uploadFile`, formData).then((response) => {
+            if (response.data.status) {
+                const requestOptions = {
+                    method: 'PUT',
+                    headers: { ...authHeader(), 'content-type': 'multipart/form-data' },
+                    body: JSON.stringify({...user, avatar: response.data.data})
+                };
+                return fetch(`${serverURL}/updateProfile`, requestOptions).then(handleResponse);
+            }
+        })
+    } else {
+    
+        const requestOptions = {
+            method: 'PUT',
+            headers: { ...authHeader(), 'content-type': 'multipart/form-data' },
+            body: JSON.stringify(user)
+        };
+        return fetch(`${serverURL}/updateProfile`, requestOptions).then(handleResponse);
+    }
 }
 
 function updateForAdmin(user) {

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" id="Layer_1" x="0px" y="0px" viewBox="4.418 69.809 182.622 59.205" style="enable-background:new 0 0 200 200;" xmlns="http://www.w3.org/2000/svg">
+  <style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:#B9B9B9;}
+	.st2{fill:#004E79;}
+	.st3{fill:none;stroke:#004E79;stroke-width:1.86;stroke-miterlimit:10;}
+	.st4{fill:none;stroke:#707070;stroke-width:0.5;}
+	.st5{fill:#39A2DB;}
+	.st6{opacity:0.4;}
+	.st7{fill:none;stroke:#39A2DB;stroke-width:5;}
+	.st8{fill:#508CAE;}
+	.st9{fill:#C8ECFF;}
+	.st10{display:none;fill:#F4AF31;}
+	.st11{fill:#F6F6F6;}
+	.st12{fill:#1F8AFF;}
+	.st13{fill:#39CF81;}
+	.st14{font-family:'FranklinGothic-DemiItalic';}
+	.st15{font-size:27.5637px;}
+</style>
+  <g id="Group_109" transform="translate(-37.542 -29)"/>
+  <path id="Path_35" class="st10" d="M100.59,90.8l0.39,1.2h11.39c0.62,0.03,1.09,0.56,1.06,1.17v14.97c0.03,0.62-0.45,1.15-1.06,1.18 H88.05c-0.62-0.03-1.09-0.56-1.06-1.17V91.2c-0.03-0.62,0.45-1.14,1.06-1.18h11.54C100.06,90.04,100.46,90.35,100.59,90.8z"/>
+  <g id="Group_16" transform="translate(-36.344 -17)">
+    <g id="Group_3" transform="translate(-86.672 -137.842)">
+      <g id="Group_2" transform="translate(168.818 168.818)">
+        <circle id="Ellipse_5" class="st12" cx="-9.93" cy="85.21" r="22.56"/>
+        <g id="Group_1" transform="translate(6.091 8.524)">
+          <path id="Path_1" class="st0" d="M-30.59,65.31h25.2c0.19,0,0.39,0.03,0.57,0.09c2.86,0.75,4.75,3.47,4.46,6.41 c-0.47,5.32,0.03,9.58-11.9,9.58l0.94-6.13h5.32l0.79-4.7h-22.18L-30.59,65.31z"/>
+          <path id="Path_2" class="st0" d="M-22.82,75.17h5.56L-19.3,89.6l-5.95,3.37L-22.82,75.17z"/>
+        </g>
+      </g>
+      <path id="Path_3" class="st13" d="M185.53,258.2c-0.81-1.02-2.29-1.2-3.31-0.39c0,0-12.86,10.8-13.23,11.13l-5.06-4.46 c-1.22-1.08-3.09-0.97-4.17,0.25c-0.95,1.07-0.99,2.66-0.12,3.78l6.49,8.34c0.03,0.04,0.07,0.08,0.1,0.12 c1.27,1.5,3.52,1.68,5.02,0.41l14.11-16.05l0.04-0.04C186.2,260.43,186.25,259.12,185.53,258.2z"/>
+    </g>
+    <text transform="matrix(1 0 0 1 107.2145 127.7783)" class="st12 st14 st15" style="white-space: pre;">TestProof</text>
+  </g>
+</svg>

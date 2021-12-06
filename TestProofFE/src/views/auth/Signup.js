@@ -8,16 +8,17 @@ import {
   CForm,
   CInvalidFeedback,
   CFormGroup,
+  // CInput,
   CInput,
   CRow,
   CImg,
   CContainer,
-  CCardGroup
+  CCardGroup,
 } from '@coreui/react'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import { useDispatch } from 'react-redux';
-import { userService } from '../../controllers/_services';
+import { userService, packageService } from '../../controllers/_services';
 import { successNotification, warningNotification } from '../../controllers/_helpers';
 import { useHistory } from 'react-router-dom';
 
@@ -65,27 +66,85 @@ const initialValues = {
   username: "",
   email: "",
   password: "",
-  confirmPassword: ""
+  confirmPassword: "",
+  package: ""
 }
 
 const Signup = () => {
   const dispatch = useDispatch()
   const history = useHistory();
 
+  const [options, setOptions] = useState([1,2,3])
+  const [pack, setPack] = useState('')
+
+  useEffect(() => {
+    window.hs = history
+    setOptions([4,5,6])
+    packageService.getOptions()
+    .then(data => {
+      console.log(data)
+
+      let optionList = data.map(item => {
+        return item['fields']['name']
+      })
+      console.log(optionList)
+      setOptions(optionList)
+      if(optionList.length > 0) setPack(optionList[0])
+      // setTimeout(()=>test(), 2000)
+    })
+  }, [])
+  let gotoSignin = () =>{
+    history.push('signin')
+  }
+  let test = () => {
+    // let flag = confirm('do you signup with faker')
+    // console.log('test')
+    alert('test')
+    let username = Math.random()
+    let email = Math.random() + "@gmail.com"
+    let password = "Alex123123"
+    let confirmPassword = "Alex123123"
+
+    userService.register({
+      "username": username,
+      "email": email,
+      "password": password,
+      "package" : pack
+    })
+    .then(
+        user => {
+          console.log(user)
+          if (user && user.status) {
+            successNotification(user.message, 3000);
+            history.push("signin")
+            // gotoSignin()
+            // console.log(history)
+          } else {
+            warningNotification(user.message, 3000);
+          }
+        },
+        error => {
+            warningNotification(error, 3000);
+        }
+    );
+  }
   const onSubmit = (values, { setSubmitting, setErrors }) => {
       // console.log('User has been successfully saved!', values)
     setSubmitting(false)
-  
+    console.log(values)
+    console.log(pack)
     userService.register({
         "username": values.username,
         "email": values.email,
-        "password": values.password
+        "password": values.password,
+        "package" : pack
       })
       .then(
           user => {
             if (user && user.status) {
-              successNotification(user.message, 3000);
+              // successNotification(user.message, 3000);
               history.push("signin")
+              // console.log(history)
             } else {
               warningNotification(user.message, 3000);
             }
@@ -163,6 +222,15 @@ const Signup = () => {
                                           onBlur={handleBlur}
                                           value={values.email} />
                                   <CInvalidFeedback>{errors.email}</CInvalidFeedback>
+                                </CFormGroup>
+                                <CFormGroup>
+                                  <select className='form-control is-invalid' onChange={(e) => {setPack(e.target.value)}}>
+                                    {
+                                      options.map((item, key) => <option value={item} key={key}>{item}</option>)
+                                    }
+                                  </select>
+                                
+                                  <CInvalidFeedback>{errors.package}</CInvalidFeedback>
                                 </CFormGroup>
                                 <CFormGroup>
                                   <CInput type="password"

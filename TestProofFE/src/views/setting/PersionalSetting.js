@@ -20,9 +20,19 @@ import { successNotification, warningNotification } from '../../controllers/_hel
 const validationSchema = function (values) {
   return Yup.object().shape({
     fullName: Yup.string().required('Full Name is required'),
-    password: Yup.string().required('Title is required'),
-    password: Yup.string().required('User name is required'),
-    password: Yup.string().required('Email is required'),
+    email: Yup.string().required('Title is required'),
+    title: Yup.string().required('User name is required'),
+  })
+}
+
+const validationSchemaWithPassword = function (values) {
+  return Yup.object().shape({
+    fullName: Yup.string().required('Full Name is required'),
+    email: Yup.string().required('Title is required'),
+    title: Yup.string().required('User name is required'),
+    oldPassword: Yup.string().required('Old password is required'),
+    newPassword: Yup.string().required('New password is required'),
+    confirmPassword: Yup.string().required('New password is required'),
   })
 }
 
@@ -48,18 +58,17 @@ const getErrorsFromValidationError = (validationError) => {
   }, {})
 }
 
-const initialValues = {
-  userName: '',
-  password: '',
-}
+
 
 const PersionalSetting = () => {
   const dispatch = useDispatch()
   const history = useHistory()
   const user = useSelector((state) => state.user)
 
+  const [initialValues, setInitialValues] = useState(null)
+  const [avatar, setAvatar] = useState()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [fullName, setFullName] = useState()
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     dispatch({ type: 'set', darkMode: false })
@@ -69,39 +78,59 @@ const PersionalSetting = () => {
     }
   }, [])
 
+  useEffect(() => {
+    const { username, fullName, title, email } = user;
+    setInitialValues({ username, fullName, title, email });
+  }, [user])
+
   //  # Med ID, Address 1, Address 2, City, Zip, Phone Number, Last Purchase Date
   const fields = [
     {
       id: 'full-name',
       jsonName: 'fullName',
       label: 'Full Name',
-      value: fullName,
-      updateValueFunc: setFullName,
     },
   ]
-  const onSubmit = () => {
+  const onSubmit = (values, { setSubmitting, setErrors }) => {
+    const { fullName, username, email, title, oldPassword, newPassword, confirmPassword  } = values;
     if (user) {
-      let updateFields = {}
-      fields.forEach((field) => {
-        updateFields[field.jsonName] = field.value
-      })
-
-      const newUser = {
-        ...user,
-        ...updateFields,
+      let newUser = {}
+      if (!showPassword) {
+        newUser = {
+          ...user,
+          fullName,
+          username,
+          email,
+          title,
+        }
+      } else {
+        if (confirmPassword !== newPassword) {
+          warningNotification('Confirm password is incorrect', 3000)
+          return
+        }
+        newUser = {
+          ...user,
+          fullName,
+          username,
+          email,
+          title,
+          oldPassword,
+          newPassword,
+        }
       }
-
-      console.log(newUser)
-      setIsSubmitting(true)
+      if (avatar) {
+        newUser['avatarFile'] = avatar;
+      }
+      setSubmitting(true)
       userService.update(newUser).then(
         (result) => {
-          dispatch({ type: 'set', user: newUser })
+          dispatch({ type: 'set', user: result.data })
           successNotification('Updated your profile successfully', 3000)
-          setIsSubmitting(false)
+          setSubmitting(false)
         },
         (error) => {
           warningNotification(error, 3000)
-          setIsSubmitting(false)
+          setSubmitting(false)
         },
       )
     }
@@ -114,9 +143,9 @@ const PersionalSetting = () => {
       </h1>
       <Card style={{ maxWidth: '640px', margin: 'auto' }}>
         <CardContent style={{ maxWidth: '456px', margin: 'auto' }}>
+          {initialValues &&
           <Formik
             initialValues={initialValues}
-            validate={validate(validationSchema)}
             onSubmit={onSubmit}
           >
             {({
@@ -135,10 +164,10 @@ const PersionalSetting = () => {
             }) => (
               <CRow>
                 <CCol lg="12">
-                  <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
+                  <CForm onSubmit={handleSubmit} name="simpleForm">
                     <Grid container spacing={1}>
                       <Grid item xs={12}>
-                        <PictureUpload />
+                        <PictureUpload file={avatar} setFile={setAvatar} />
                       </Grid>
                       <Grid item xs={12}>
                         <CFormGroup>
@@ -178,23 +207,23 @@ const PersionalSetting = () => {
                         <CFormGroup>
                           <CInput
                             type="text"
-                            name="userName"
-                            id="userName"
+                            name="username"
+                            id="username"
                             placeholder="Username"
-                            autoComplete="userName"
-                            valid={!errors.userName}
-                            invalid={touched.userName && !!errors.userName}
+                            autoComplete="username"
+                            valid={!errors.username}
+                            invalid={touched.username && !!errors.username}
                             required
-                            onChange={handleChange}
+                            // onChange={handleChange}
                             onBlur={handleBlur}
-                            value={values.userName}
+                            value={values.username}
                           />
                         </CFormGroup>
                       </Grid>
                       <Grid item xs={12}>
                         <CFormGroup>
                           <CInput
-                            type="text"
+                            type="email"
                             name="email"
                             id="email"
                             placeholder="Email"
@@ -208,23 +237,72 @@ const PersionalSetting = () => {
                           />
                         </CFormGroup>
                       </Grid>
+                      { !showPassword ?
                       <Grid item xs={12}>
                         <CFormGroup>
-                          <CInput
-                            type="text"
-                            name="password"
-                            id="password"
-                            placeholder="Change Password"
-                            autoComplete="password"
-                            valid={!errors.password}
-                            invalid={touched.password && !!errors.password}
-                            required
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            value={values.password}
-                          />
+                          <CButton
+                            className="change-password-button m-0 mt-3"
+                            block
+                            onClick={() => setShowPassword(true)}
+                          >
+                            Change Password
+                          </CButton>
                         </CFormGroup>
                       </Grid>
+                      :
+                      (<>
+                        <Grid item xs={12}>
+                          <CFormGroup>
+                            <CInput
+                              type="password"
+                              name="oldPassword"
+                              id="oldPassword"
+                              placeholder="Old Password"
+                              valid={!errors.oldPassword}
+                              invalid={touched.oldPassword && !!errors.oldPassword}
+                              required
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              value={values.oldPassword}
+                            />
+                          </CFormGroup>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <CFormGroup>
+                            <CInput
+                              type="password"
+                              name="newPassword"
+                              id="newPassword"
+                              placeholder="New Password"
+                              autoComplete="newPassword"
+                              valid={!errors.newPassword}
+                              invalid={touched.newPassword && !!errors.newPassword}
+                              required
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              value={values.newPassword}
+                            />
+                          </CFormGroup>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <CFormGroup>
+                            <CInput
+                              type="password"
+                              name="confirmPassword"
+                              id="confirmPassword"
+                              placeholder="Confirm New Password"
+                              autoComplete="confirmPassword"
+                              valid={!errors.confirmPassword}
+                              invalid={touched.confirmPassword && !!errors.confirmPassword}
+                              required
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              value={values.confirmPassword}
+                            />
+                          </CFormGroup>
+                        </Grid>
+                      </>)
+                      }
                       <Grid item xs={12}>
                         <CFormGroup>
                           <CButton
@@ -243,6 +321,7 @@ const PersionalSetting = () => {
               </CRow>
             )}
           </Formik>
+          }
         </CardContent>
       </Card>
     </CContainer>

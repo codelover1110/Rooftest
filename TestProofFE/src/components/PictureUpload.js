@@ -2,8 +2,7 @@
 import React from "react";
 import defaultImage from "../assets/imgs/default-avatar.png";
 
-export default function PictureUpload() {
-  const [file, setFile] = React.useState(null);
+export default function PictureUpload({file, setFile}) {
   const [imagePreviewUrl, setImagePreviewUrl] = React.useState(defaultImage);
   const handleImageChange = e => {
     e.preventDefault();
@@ -18,12 +17,6 @@ export default function PictureUpload() {
     }
   };
   // eslint-disable-next-line
-  const handleSubmit = e => {
-    e.preventDefault();
-    // this.state.file is the file/image uploaded
-    // in this function you can save the image (this.state.file) on form submit
-    // you have to call it yourself
-  };
   return (
     <div className="picture-container">
       <div className="picture">

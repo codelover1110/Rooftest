@@ -61,6 +61,7 @@ const Signin = () => {
         result => {
           if (result.status)  {
             dispatch({type: 'set', isLogin: true})
+            dispatch({type: 'set', user: result.data})
             successNotification('Welcome to TestProof', 3000)
             history.push('home')
           }
@@ -98,7 +99,7 @@ const Signin = () => {
 
                     <Formik
                       initialValues={initialValues}
-                      validate={validate(validationSchema)}
+                      // validate={validate(validationSchema)}
                       onSubmit={onSubmit}
                     >
                       {
