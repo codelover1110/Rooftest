@@ -57,34 +57,41 @@ const EmailVerify = () => {
   const selectedUser = useSelector(state => state.selectedUser);
   
   const onSubmit = (values, { setSubmitting, setErrors }) => {
-    userService.emailVerify(selectedUser.email, values.verifyCode, selectedUser.password)
+    userService.emailVerify(selectedUser.username, values.verifyCode, selectedUser.password)
       .then(
           res => {
-            userService.login(selectedUser.email, selectedUser.password, false)
-                .then(
-                    result => {
-                        if (result.status) {
-                          dispatch({type: 'set', openEmailVerification: false})
-                          dispatch({type: 'set', isLogin: true})
-                          setSubmitting(false)
-                          if (result.is_superuser === 1) {
-                            successNotification('Welcome Adminstrator', 3000)
-                            dispatch({type: 'set', isAdmin: true})
-                            history.push('users')
+            if (res && res.status) {
+              userService.login(selectedUser.username, selectedUser.password, false)
+                  .then(
+                      result => {
+                          if (result.status) {
+                            dispatch({type: 'set', openEmailVerification: false})
+                            dispatch({type: 'set', isLogin: true})
+                            setSubmitting(false)
+                            if (result.is_superuser === 1) {
+                              successNotification('Welcome Adminstrator', 3000)
+                              dispatch({type: 'set', isAdmin: true})
+                              history.push('users')
+                            } else {
+                              const data = JSON.parse(result.data);
+                              dispatch({type: 'set', user: data})
+                              successNotification('Welcome to TestProof', 3000)
+                              history.push('home')
+                            }
                           } else {
-                            successNotification('Welcome to Orderahead', 3000)
-                            history.push('home')
+                            warningNotification('Failed', 3000)
                           }
-                        } else {
-                          warningNotification('Failed', 3000)
-                        }
-                    },
-                    error => {
-                        warningNotification(error, 3000)
-                        setSubmitting(false)
-                    }
-                );
-            setSubmitting(false)
+                      },
+                      error => {
+                          warningNotification(error, 3000)
+                          setSubmitting(false)
+                      }
+                  );
+              setSubmitting(false)
+            } else {
+              setSubmitting(false)
+              warningNotification('Incorrect Code', 3000)
+            }
           },
           error => {
             warningNotification(error, 3000)

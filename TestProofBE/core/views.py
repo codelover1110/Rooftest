@@ -7,6 +7,7 @@ from .models import User, Package
 from django.db.models import Q
 from django.contrib.auth.hashers import make_password, check_password
 import jwt
+import json
 from random import randint
 from django.conf import settings
 from django.core.mail import send_mail
@@ -30,8 +31,12 @@ def signin(request):
             user_serializer = UserSerializer(user)
 
             if user_serializer.data and check_password(user_data['password'], user_serializer.data['password']):
-                encoded = jwt.encode({'id': user_serializer.data['id']}, 'TestProofSecretKey', algorithm='HS256')
-                return JsonResponse({'status': True, 'message': 'Successfully signin', 'data': user_serializer.data, 'token': encoded}, safe=False)
+                encoded = jwt.encode({"id": user_serializer.data["id"]}, "TestProofSecretKey", algorithm="HS256");
+                if user.isVerified:
+                    return JsonResponse({'status': True, 'message': 'Successfully signin', 'data': json.dumps(user_serializer.data)}, safe=False)
+                    # return JsonResponse({'status': True, 'message': 'Successfully signin', 'data': user_serializer.data}, safe=False)
+                else:
+                    return JsonResponse({'status': False, 'data': 'email_verify'})
             else:
                 return JsonResponse({'status': False, 'message': 'The credential is incorrect'}, safe=False)
 
@@ -50,9 +55,15 @@ def signup(request):
             email=user_data['email'],
             username=user_data['username'],
             package=user_data['package'],
-            password=make_password(user_data['password'])
+            password=make_password(user_data['password']),
+            code=randint(1000000, 9999999)
         )
         user.save()
+        subject = 'Welcome to TestProof'
+        message = f'Hi {user.username}, Verification code: {user.code}'
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [user.email]
+        send_mail(subject, message, email_from, recipient_list)
         return JsonResponse({'status': True, 'message': 'Successfully signup'}, safe=False)
 
     return JsonResponse({'status': False, 'message': 'Input error'}, status=status.HTTP_400_BAD_REQUEST)
@@ -95,7 +106,7 @@ def forgotPasswordToConfirmEmail(request):
             user.save()
 
             subject = 'Welcome to TestProof'
-            message = f'Hi {user.username}, Verification code: ${user.code}'
+            message = f'Hi {user.username}, Verification code: {user.code}'
             email_from = settings.EMAIL_HOST_USER
             recipient_list = [user.email, ]
             # send_mail(subject, message, email_from, recipient_list)
@@ -143,11 +154,17 @@ def updateProfile(request):
     if user_data:
         if User.objects.filter(username=user_data['username']).exists():
             user = User.objects.get(username=user_data['username'])
-
+            needToEmail = False
             if 'fullName' in user_data and 'title' in user_data and 'email' in user_data:
                 user.fullName = user_data['fullName']
                 user.title = user_data['title']
-                user.email = user_data['email']
+                if user.email != user_data['email']:
+                    user.email = user_data['email']
+                    code=randint(1000000, 9999999)
+                    user.code = code
+                    user.isVerified = False
+                    needToEmail = True
+
             if 'avatar' in user_data:
                 user.avatar = user_data['avatar']
 
@@ -161,6 +178,12 @@ def updateProfile(request):
                 else:
                     return JsonResponse({'status': False, 'message': 'Old password is incorrect'})
             user.save()
+            if needToEmail:
+                subject = 'Welcome to TestProof'
+                message = f'Hi {user.username}, Verification code: {user.code}'
+                email_from = settings.EMAIL_HOST_USER
+                recipient_list = [user.email]
+                send_mail(subject, message, email_from, recipient_list)
             new_user_serializer = UserSerializer(user)
 
             return JsonResponse({'status': True, 'data': new_user_serializer.data})
@@ -176,6 +199,20 @@ def getPackageOptions(request):
     # return HttpResponse(package_list)
     return JsonResponse({'status': 200, 'data': package_list})
 @api_view(['GET'])
-def test(request):
-    # return JsonResponse({'state': 200, 'data': 'test view'})
-    return HttpResponse("You're voting on question.")
+def emailVerify(request):
+    username = request.GET.get('username', None)
+    password = request.GET.get('password', None)
+    verifyCode = request.GET.get('verifyCode', None)
+    print(username)
+    print(verifyCode)
+    criterion1 = Q(username=username)
+    criterion2 = Q(email=username)
+    if username and User.objects.filter(criterion1 | criterion2).exists():
+        user = User.objects.get(criterion1 | criterion2)
+        user_serializer = UserSerializer(user)
+        print(user.code)
+        if user and verifyCode == user.code and check_password(password, user_serializer.data['password']):
+            user.isVerified = True
+            user.save()
+            return JsonResponse({'status': True})
+    return JsonResponse({'status': False})
