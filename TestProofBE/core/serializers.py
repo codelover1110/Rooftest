@@ -16,5 +16,6 @@ class UserSerializer(serializers.ModelSerializer):
                     'fullName',
                     'title',
                     'code',
-                    'isTFA'
+                    'isTFA',
+                    'isVerified'
                   )

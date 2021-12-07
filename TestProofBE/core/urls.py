@@ -12,5 +12,5 @@ urlpatterns = [
     url(r'^updateProfile', views.updateProfile),
     url(r'^uploadFile', views.uploadFile),
     url(r'^getPackageOptions', views.getPackageOptions),
-    url(r'^test', views.test),
+    url(r'^users/verify', views.emailVerify)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

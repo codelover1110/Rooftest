@@ -12,6 +12,7 @@ class User(models.Model):
     code = models.CharField(max_length=100, blank=True, null=True)
     isTFA = models.BooleanField(null=False, default=False)
     package = models.CharField(max_length = 255)
+    isVerified = models.BooleanField(null=False, default=False)
 
 class Package(models.Model):
     

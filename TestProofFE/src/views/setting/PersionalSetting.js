@@ -69,6 +69,7 @@ const PersionalSetting = () => {
   const [avatarFile, setAvatarFile] = useState()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [isVerified, setIsVerified] = useState(true)
 
   useEffect(() => {
     dispatch({ type: 'set', darkMode: false })
@@ -79,8 +80,10 @@ const PersionalSetting = () => {
   }, [])
 
   useEffect(() => {
-    const { username, fullName, title, email, avatar } = user;
-    setInitialValues({ username, fullName, title, email, avatar });
+    const { username, fullName, title, email, avatar, isVerified } = user;
+    if (!isVerified) setIsVerified(false)
+    else setIsVerified(true)
+    setInitialValues({ username, fullName, title, email, avatar, });
   }, [user])
 
   //  # Med ID, Address 1, Address 2, City, Zip, Phone Number, Last Purchase Date
@@ -214,7 +217,7 @@ const PersionalSetting = () => {
                             valid={!errors.username}
                             invalid={touched.username && !!errors.username}
                             required
-                            // onChange={handleChange}
+                            onChange={() => {}}
                             onBlur={handleBlur}
                             value={values.username}
                           />
@@ -222,6 +225,9 @@ const PersionalSetting = () => {
                       </Grid>
                       <Grid item xs={12}>
                         <CFormGroup>
+                          {(!isVerified || values.email !== initialValues.email) &&
+                            <div className="email-verify-label">Email is not verified</div>
+                          }
                           <CInput
                             type="email"
                             name="email"

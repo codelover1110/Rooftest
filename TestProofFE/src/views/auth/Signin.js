@@ -61,18 +61,21 @@ const Signin = () => {
         result => {
           if (result.status)  {
             dispatch({type: 'set', isLogin: true})
-            dispatch({type: 'set', user: result.data})
+            const data = JSON.parse(result.data);
+            dispatch({type: 'set', user: data})
             successNotification('Welcome to TestProof', 3000)
             history.push('home')
           }
           else {
-
-            warningNotification(result.message, 3000)
-            // dispatch({type: 'set', selectedUser: {
-            //   "email": values.email,
-            //   "password": values.password
-            // }})
-            // dispatch({type: 'set', openEmailVerification: true})
+            if (result.data === 'email_verify') {
+              dispatch({type: 'set', selectedUser: {
+                "username": values.username,
+                "password": values.password
+              }})
+              dispatch({type: 'set', openEmailVerification: true})
+            } else {
+              warningNotification(result.message, 3000)
+            }
           }
         },
         error => {

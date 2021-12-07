@@ -71,12 +71,12 @@ function forgotPassword(user) {
     return fetch(`${serverURL}/forgotPassword`, requestOptions).then(handleResponse);;
 }
 
-function emailVerify(email, verifyCode, password) {
+function emailVerify(username, verifyCode, password) {
     const requestOptions = {
         method: 'GET'
     };
 
-    return fetch(`${serverURL}/users/verify?email=${email}&verifyCode=${verifyCode}&password=${password}`, requestOptions).then(handleResponse);
+    return fetch(`${serverURL}/users/verify?username=${username}&verifyCode=${verifyCode}&password=${password}`, requestOptions).then(handleResponse);
 }
 
 function logout() {
